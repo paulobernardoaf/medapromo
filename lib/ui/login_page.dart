@@ -1,9 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/style/theme.dart' as Theme;
+import 'package:me_da_promo/ui/home_page.dart';
 import 'package:me_da_promo/utils/bubble_indication_painter.dart';
+
+import '../auth.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -34,18 +39,20 @@ class _LoginPageState extends State<LoginPage>
   TextEditingController signupEmailController = new TextEditingController();
   TextEditingController signupNameController = new TextEditingController();
   TextEditingController signupPasswordController = new TextEditingController();
-  TextEditingController signupConfirmPasswordController =
-      new TextEditingController();
+  TextEditingController signupConfirmPasswordController = new TextEditingController();
 
   PageController _pageController;
 
   Color left = Colors.black;
   Color right = Colors.white;
 
+  Future<FirebaseUser> _user;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       key: _scaffoldKey,
+      resizeToAvoidBottomPadding: false,
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (overscroll) {
           overscroll.disallowGlow();
@@ -53,9 +60,7 @@ class _LoginPageState extends State<LoginPage>
         child: SingleChildScrollView(
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height >= 775.0
-                    ? MediaQuery.of(context).size.height
-                    : 775.0,
+                height: MediaQuery.of(context).size.height >= 775.0 ? MediaQuery.of(context).size.height : 775.0,
                 decoration: new BoxDecoration( // NAO PODE TIRAR
                   color: Colors.white,
                 ),
@@ -308,7 +313,7 @@ class _LoginPageState extends State<LoginPage>
                 child: MaterialButton(
                     highlightColor: Colors.transparent,
                     splashColor: Theme.Colors.loginGradientEnd,
-                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(25.0))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 10.0, horizontal: 42.0),
@@ -320,8 +325,8 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: () =>
-                        showInSnackBar("Login button pressed")),
+                    // onPressed: () => login(loginEmailController, loginPasswordController)
+                    ),
               ),
             ],
           ),
@@ -392,7 +397,13 @@ class _LoginPageState extends State<LoginPage>
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
                 child: GestureDetector(
-                  onTap: () => showInSnackBar("Google button pressed"),
+                  onTap: () => {
+                    authService.signInWithGoogle().then((user) => {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => HomePage(user: user,))
+                        )
+                    })
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(15.0),
                     decoration: new BoxDecoration(

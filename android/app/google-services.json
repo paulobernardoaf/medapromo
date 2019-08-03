@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "701579136948",
+    "firebase_url": "https://me-da-promo.firebaseio.com",
+    "project_id": "me-da-promo",
+    "storage_bucket": "me-da-promo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701579136948:android:95556d4338cc5ee7",
+        "android_client_info": {
+          "package_name": "com.paulobernardo.medapromo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "701579136948-q3a601qvcfkp28cje6rafd5f4e41jkbd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.paulobernardo.medapromo",
+            "certificate_hash": "2db662ead314599af560fa2fb4f4f386f520ec46"
+          }
+        },
+        {
+          "client_id": "701579136948-ck66iuqakv805ceq4metl52ps9he1mkc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_GG8qoHgkBd9L43PxOWcTfaRdux_w94o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "701579136948-ck66iuqakv805ceq4metl52ps9he1mkc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
