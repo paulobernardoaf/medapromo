@@ -27,7 +27,10 @@ dependencies:
   firebase_auth:
   google_sign_in:
   rxdart:
-  cloud_firestore:    
+  cloud_firestore:
+  http:
+  intl:
+  material_design_icons_flutter:
 
 dev_dependencies:
   flutter_test:
