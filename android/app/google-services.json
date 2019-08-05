@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "701579136948-f564u5678dp9l5er70alp9btjmjlgj88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.paulobernardo.medapromo",
+            "certificate_hash": "9f26e89bcbdd9942e8b8cbb6c5b5507ce3864521"
+          }
+        },
+        {
           "client_id": "701579136948-q3a601qvcfkp28cje6rafd5f4e41jkbd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -47,11 +47,18 @@ class AuthService {
     );
   }
 
-  Future<void> signUp({String email, String password}) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
+  Future<FirebaseUser> signUp(String email, String password) async {
+    await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    return _firebaseAuth.currentUser();
+  }
+
+  Future<void> sendEmailVerification() async {
+    FirebaseUser user = await _firebaseAuth.currentUser();
+    user.sendEmailVerification();
   }
 
   Future<void> signOut() async {

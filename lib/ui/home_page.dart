@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:me_da_promo/models/promotion.dart';
 import 'package:me_da_promo/repos/promotion_repository.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:me_da_promo/ui/promotion_card.dart';
 import '../auth.dart';
 import 'custom_card.dart';
 
@@ -19,8 +20,10 @@ class _HomePageState extends State<HomePage> {
   int promotionIndex = 0;
   List<Promotion> _promotions = <Promotion>[];
   _HomePageState({Key key, @required this.user});
-
+  bool isLoading = true;
   ScrollController scrollController;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+    new GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -33,10 +36,21 @@ class _HomePageState extends State<HomePage> {
     final Stream<Promotion> stream = await getPromotions(user);
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
+        isLoading = false;
+  }
+
+  Future<Null> _refresh() async {
+    _promotions = <Promotion>[];
+    final Stream<Promotion> stream = await getPromotions(user);
+    stream.listen(
+        (Promotion promotion) => setState(() => _promotions.add(promotion)));
+        isLoading = false;
+    return null;
   }
 
   Choice _selectedChoice = choices[0];
-  void _select(Choice choice) {
+  
+    void _select(Choice choice) {
     // Causes the app to rebuild with the new _selectedChoice.
     setState(() {
       _selectedChoice = choice;
@@ -50,7 +64,8 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       drawer: Drawer(
-        child: ListView(
+        child: 
+        ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             UserAccountsDrawerHeader(
@@ -80,53 +95,21 @@ class _HomePageState extends State<HomePage> {
         title: Text("HomePage"),
         backgroundColor: Colors.grey,
       ),
-      body: Container(
-        child: ListView.builder(
+      body: isLoading ? 
+        Center(child: CircularProgressIndicator(),) 
+        : 
+        Container(
+        child: RefreshIndicator(
+    key: _refreshIndicatorKey,
+    onRefresh: _refresh,
+    child: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           itemCount: _promotions.length,
           itemBuilder: (BuildContext context, int index) {
-            return Card(
-              elevation: 8.0,
-              margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-              color: Colors.transparent,
-              child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: new BorderRadius.circular(8.0),
-                    color: Colors.grey,
-                    ),                  
-                  child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                      leading: Container(
-                        padding: EdgeInsets.only(right: 12.0),
-                        decoration: new BoxDecoration(
-                            border: new Border(
-                                right: new BorderSide(width: 1.0, color: Colors.white24))),
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(_promotions[index].imageLink),
-                          radius: 29.0,
-                        )
-                      ),
-                      title: Text(_promotions[index].title,
-                        style: TextStyle(
-                            color: Colors.white, 
-                            fontWeight: FontWeight.bold),
-                      ),
-                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-                      subtitle: Row(
-                        children: <Widget>[
-                          Icon(Icons.attach_money, color: Colors.white,),
-                          Text(_promotions[index].price,
-                              style: TextStyle(color: Colors.white))
-                        ],
-                      ),
-                      trailing: Icon(Icons.keyboard_arrow_right,
-                          color: Colors.white, size: 30.0)
-                    )
-                  ),                          
-            );
+            return PromotionCard.fromPromotion(_promotions[index]);
           },
-        ),
+        ),)          
       ),
     );
   }
@@ -142,3 +125,4 @@ class Choice {
 const List<Choice> choices = const <Choice>[
   const Choice(title: 'SignOut', icon: MdiIcons.exitToApp),
 ];
+
