@@ -45,122 +45,90 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              UserAccountsDrawerHeader(
-                accountName: Text(user.displayName),
-                accountEmail: Text(user.email),
-                currentAccountPicture: CircleAvatar(
-                  radius: 30.0,
-                  backgroundImage: NetworkImage(user.photoUrl),
-                  backgroundColor: Colors.transparent,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              accountName: Text(user.displayName),
+              accountEmail: Text(user.email),
+              currentAccountPicture: CircleAvatar(
+                radius: 30.0,
+                backgroundImage: NetworkImage(user.photoUrl),
+                backgroundColor: Colors.transparent,
               ),
-              ListTile(
-                title: Text('Sair'),
-                onTap: () {
-                  authService.signOut();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
+              decoration: BoxDecoration(
+                color: Colors.grey,
               ),
-            ],
-          ), // Populate the Drawer in the next step.
-        ),
-        appBar: new AppBar(
-          title: Text("HomePage"),
-        ),
-        body: Column(children: <Widget>[
-          Container(
-              height: 350.0,
-              child: ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: _promotions.length,
-                controller: scrollController,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, position) {
-                  return GestureDetector(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        margin: EdgeInsets.all(32.0),
-                        child: Container(
-                          width: 250.0,
-                          height: 300.0,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.more_vert,
-                                      color: Colors.grey,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0, vertical: 4.0),
-                                      child: Text(
-                                        "${_promotions[position].price} reais",
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0, vertical: 4.0),
-                                      child: Text(
-                                        "${_promotions[position].title}",
-                                        style: TextStyle(fontSize: 28.0),
-                                      ),
-                                    ),
-                                    // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    //   child: LinearProgressIndicator(value: cardsList[position].taskCompletion,),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
+            ),
+            ListTile(
+              title: Text('Sair'),
+              onTap: () {
+                authService.signOut();
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ), // Populate the Drawer in the next step.
+      ),
+      appBar: new AppBar(
+        title: Text("HomePage"),
+        backgroundColor: Colors.grey,
+      ),
+      body: Container(
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          itemCount: _promotions.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              elevation: 8.0,
+              margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+              color: Colors.transparent,
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: new BorderRadius.circular(8.0),
+                    color: Colors.grey,
+                    ),                  
+                  child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                      leading: Container(
+                        padding: EdgeInsets.only(right: 12.0),
+                        decoration: new BoxDecoration(
+                            border: new Border(
+                                right: new BorderSide(width: 1.0, color: Colors.white24))),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(_promotions[index].imageLink),
+                          radius: 29.0,
+                        )
                       ),
-                    ),
-                    onHorizontalDragEnd: (details) {
-                      if (details.velocity.pixelsPerSecond.dx > 0) {
-                        if (promotionIndex > 0) promotionIndex--;
-                      } else {
-                        if (promotionIndex < 2) promotionIndex++;
-                      }
-                      setState(() {
-                        scrollController.animateTo((promotionIndex) * 256.0,
-                            duration: Duration(milliseconds: 500),
-                            curve: Curves.fastOutSlowIn);
-                      });
-                    },
-                  );
-                },
-              )),
-        ]));
+                      title: Text(_promotions[index].title,
+                        style: TextStyle(
+                            color: Colors.white, 
+                            fontWeight: FontWeight.bold),
+                      ),
+                      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+                      subtitle: Row(
+                        children: <Widget>[
+                          Icon(Icons.attach_money, color: Colors.white,),
+                          Text(_promotions[index].price,
+                              style: TextStyle(color: Colors.white))
+                        ],
+                      ),
+                      trailing: Icon(Icons.keyboard_arrow_right,
+                          color: Colors.white, size: 30.0)
+                    )
+                  ),                          
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 

@@ -4,7 +4,7 @@ import 'dart:convert';
 import '../models/promotion.dart';
 
 Future<Stream<Promotion>> getPromotions(FirebaseUser user) async {
-  final String url = 'http://192.168.0.14:3000/promotion';
+  final String url = 'https://medapromo.herokuapp.com/promotion';
 
   final client = new http.Client();
   final streamedRest = await client.send(
