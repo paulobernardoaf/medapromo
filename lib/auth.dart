@@ -40,20 +40,45 @@ class AuthService {
     return _firebaseAuth.currentUser();
   }
 
-  Future<void> signInWithCredentials(String email, String password) {
-    return _firebaseAuth.signInWithEmailAndPassword(
+  Future<FirebaseUser> signInWithCredentials(String email, String password) async {
+
+    FirebaseUser user;
+
+    await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
+    ).then( (val) async {
+        user = await _firebaseAuth.currentUser();
+      }
     );
+
+    return user;
+
   }
 
-  Future<FirebaseUser> signUp(String email, String password) async {
+  Future<FirebaseUser> signUp(String email, String password, String name) async {
+
+    UserUpdateInfo userInfo = UserUpdateInfo();
+    userInfo.displayName = name;
+
+    FirebaseUser updatedUser;
+
     await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
-    );
+    ).then((val) async {
+      
+      FirebaseUser user = await _firebaseAuth.currentUser();
+      
+      await user.updateProfile(userInfo);
+      await user.reload();
 
-    return _firebaseAuth.currentUser();
+      updatedUser = await _firebaseAuth.currentUser();
+      
+    });
+
+    return updatedUser;
+     
   }
 
   Future<void> sendEmailVerification() async {

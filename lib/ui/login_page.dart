@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/style/theme.dart' as Theme;
 import 'package:me_da_promo/ui/home_page.dart';
 import 'package:me_da_promo/utils/bubble_indication_painter.dart';
-import 'package:me_da_promo/utils/email_login.dart';
 
 import '../auth.dart';
 
@@ -22,7 +20,8 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final _formKey = new GlobalKey<FormState>();
+  final _formKeyLogin = new GlobalKey<FormState>();
+  final _formKeySignUp = new GlobalKey<FormState>();
 
   final FocusNode myFocusNodeEmailLogin = FocusNode();
   final FocusNode myFocusNodePasswordLogin = FocusNode();
@@ -54,73 +53,79 @@ class _LoginPageState extends State<LoginPage>
   String _password;
   String _emailSignUp;
   String _passwordSignUp;
+  String _nameSignUp;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _scaffoldKey,
-      resizeToAvoidBottomPadding: false,
-      body: NotificationListener<OverscrollIndicatorNotification>(
-        // ignore: missing_return
-        onNotification: (overscroll) {
-          overscroll.disallowGlow();
-        },
-        child: SingleChildScrollView(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height >= 775.0 ? MediaQuery.of(context).size.height : 775.0,
-                decoration: new BoxDecoration( // NAO PODE TIRAR
-                  color: Colors.white,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 75.0),
-                      child: new Image(
-                          width: 250.0,
-                          height: 250.0,
-                          fit: BoxFit.fill,
-                          image: new AssetImage('assets/medapromo.png')),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                      child: _buildMenuBar(context),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: PageView(
-                        controller: _pageController,
-                        onPageChanged: (i) {
-                          if (i == 0) {
-                            setState(() {
-                              right = Colors.white;
-                              left = Colors.black;
-                            });
-                          } else if (i == 1) {
-                            setState(() {
-                              right = Colors.black;
-                              left = Colors.white;
-                            });
-                          }
-                        },
-                        children: <Widget>[
-                          new ConstrainedBox(
-                            constraints: const BoxConstraints.expand(),
-                            child: _buildSignIn(context),
-                          ),
-                          new ConstrainedBox(
-                            constraints: const BoxConstraints.expand(),
-                            child: _buildSignUp(context),
-                          ),
-                        ],
+     return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: new Scaffold(
+        key: _scaffoldKey,
+        resizeToAvoidBottomPadding: false,
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          // ignore: missing_return
+          onNotification: (overscroll) {
+            overscroll.disallowGlow();
+          },
+          child: SingleChildScrollView(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height >= 775.0 ? MediaQuery.of(context).size.height : 775.0,
+                  decoration: new BoxDecoration( // NAO PODE TIRAR
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 75.0),
+                        child: new Image(
+                            width: 250.0,
+                            height: 250.0,
+                            fit: BoxFit.fill,
+                            image: new AssetImage('assets/medapromo.png')),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: EdgeInsets.only(top: 20.0),
+                        child: _buildMenuBar(context),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: PageView(
+                          controller: _pageController,
+                          onPageChanged: (i) {
+                            if (i == 0) {
+                              setState(() {
+                                right = Colors.white;
+                                left = Colors.black;
+                              });
+                            } else if (i == 1) {
+                              setState(() {
+                                right = Colors.black;
+                                left = Colors.white;
+                              });
+                            }
+                          },
+                          children: <Widget>[
+                            new ConstrainedBox(
+                              constraints: const BoxConstraints.expand(),
+                              child: _buildSignIn(context),
+                            ),
+                            new ConstrainedBox(
+                              constraints: const BoxConstraints.expand(),
+                              child: _buildSignUp(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-      ),
+        ),
+      )
     );
   }
 
@@ -164,8 +169,8 @@ class _LoginPageState extends State<LoginPage>
     _pageController = PageController();
   }
 
-  bool _validateAndSave() {
-    final form = _formKey.currentState;
+  bool _validateAndSaveSignIn() {
+    final form = _formKeyLogin.currentState;
     if (form.validate()) {
       form.save();
       print("valid form");
@@ -175,17 +180,32 @@ class _LoginPageState extends State<LoginPage>
     return false;
   }
 
-  void _validateAndSubmit() async {
+  bool _validateAndSaveSignUp() {
+    final form = _formKeySignUp.currentState;
+    if (form.validate()) {
+      form.save();
+      print("valid form");
+      return true;
+    }
+    print("invalid form");
+    return false;
+  }
 
-    if (_validateAndSave()) {
+  void _validateAndSubmitLogin() async {
+
+    if (_validateAndSaveSignIn()) {
       String userId = "";
       try {        
           print(_email);
           print(_password);
-          await authService.signInWithCredentials(_email, _password);
+          FirebaseUser user = await authService.signInWithCredentials(_email, _password);
           // authService.sendEmailVerification();
           // _showVerifyEmailSentDialog();
-          print('Signed in user: $userId');      
+
+          print('Signed in user: $userId');    
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context) => HomePage(user: user,)
+              ));
 
       } catch (e) {
         print('Error: $e');
@@ -195,19 +215,18 @@ class _LoginPageState extends State<LoginPage>
 
     void _validateAndSubmitSignUp() async {
 
-    if (_validateAndSave()) {
-      String userId = "";
+    if (_validateAndSaveSignUp()) {
       try {        
           print(_emailSignUp);
           print(_passwordSignUp);
-          FirebaseUser user = await authService.signUp(_emailSignUp, _passwordSignUp);
-          // authService.sendEmailVerification();
-          // _showVerifyEmailSentDialog();
-          print('Signed up user: $userId');      
+          FirebaseUser user = await authService.signUp(_emailSignUp, _passwordSignUp, _nameSignUp);
+
+          user.reload().then((val) {
           Navigator.push(context, MaterialPageRoute(
             builder: (context) => HomePage(user: user,)
-            )
-          );
+              ));
+          }); 
+
       } catch (e) {
         print('Error: $e');
       }
@@ -282,7 +301,9 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Widget _buildSignIn(BuildContext context) {
-    return Container(
+    return new Form (
+      key: _formKeyLogin,
+      child: new Container(
       padding: EdgeInsets.only(top: 23.0),
       child: Column(
         children: <Widget>[
@@ -334,7 +355,7 @@ class _LoginPageState extends State<LoginPage>
                       Padding(
                         padding: EdgeInsets.only(
                             top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextField(
+                        child: TextFormField(
                           focusNode: myFocusNodePasswordLogin,
                           controller: loginPasswordController,
                           obscureText: _obscureTextLogin,
@@ -363,6 +384,8 @@ class _LoginPageState extends State<LoginPage>
                               ),
                             ),
                           ),
+                          validator: (value) => value.isEmpty ? "You must enter a valid password." : null,
+                          onSaved: (value) => _password = value.trim(),
                         ),
                       ),
                     ],
@@ -405,7 +428,7 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: () => _login
+                    onPressed: () => _validateAndSubmitLogin()
                     ),
               ),
             ],
@@ -501,13 +524,14 @@ class _LoginPageState extends State<LoginPage>
           ),
         ],
       ),
+    )
     );
   }
 
   Widget _buildSignUp(BuildContext context) {
     return new Form (
-      key: _formKey,
-      child: Container(
+      key: _formKeySignUp,
+      child: new Container(
         padding: EdgeInsets.only(top: 23.0),
         child: Column(
           children: <Widget>[
@@ -523,9 +547,38 @@ class _LoginPageState extends State<LoginPage>
                   ),
                   child: Container(
                     width: 300.0,
-                    height: 190.0,
+                    height: 330.0,
                     child: Column(
                       children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            style: TextStyle(
+                                fontFamily: "WorkSansSemiBold",
+                                fontSize: 16.0,
+                                color: Colors.black),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              icon: Icon(
+                                FontAwesomeIcons.envelope,
+                                color: Colors.black,
+                                size: 22.0,
+                              ),
+                              hintText: "Nome",
+                              hintStyle: TextStyle(
+                                  fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+                            ),
+                            validator: (value) => value.isEmpty ? "Insira um nome." : null,
+                            onSaved: (value) => _nameSignUp = value.trim(),
+                          ),
+                        ),
+                        Container(
+                          width: 250.0,
+                          height: 1.0,
+                          color: Colors.grey[400],
+                        ),
                         Padding(
                           padding: EdgeInsets.only(
                               top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
@@ -546,7 +599,7 @@ class _LoginPageState extends State<LoginPage>
                               hintStyle: TextStyle(
                                   fontFamily: "WorkSansSemiBold", fontSize: 17.0),
                             ),
-                            validator: (value) => _validateEmail(value) == true ? null : "You must enter a valid email.",
+                            validator: (value) => _validateEmail(value) == true ? null : "Email inválido.",
                             onSaved: (value) => _emailSignUp = value.trim(),
                           ),
                         ),
@@ -559,6 +612,7 @@ class _LoginPageState extends State<LoginPage>
                           padding: EdgeInsets.only(
                               top: 20.0, bottom: 15.0, left: 25.0, right: 25.0),
                           child: TextFormField(
+                            focusNode: myFocusNodePasswordLogin,
                             obscureText: _obscureTextSignup,
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
@@ -584,7 +638,7 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                               ),
                             ),
-                            validator: (value) => value.isEmpty ? "You must enter a valid password." : null,
+                            validator: (value) => value.isEmpty || value.length < 8 ? "Insira pelo menos 8 caracteres." : null,
                             onSaved: (value) => _passwordSignUp = value.trim(),
                           ),
                         ),
@@ -593,7 +647,7 @@ class _LoginPageState extends State<LoginPage>
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 170.0),
+                  margin: EdgeInsets.only(top: 310.0),
                   decoration: new BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     boxShadow: <BoxShadow>[

@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
               accountEmail: Text(user.email),
               currentAccountPicture: CircleAvatar(
                 radius: 30.0,
-                backgroundImage: NetworkImage(user.photoUrl),
+                backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl) : NetworkImage("https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"),
                 backgroundColor: Colors.transparent,
               ),
               decoration: BoxDecoration(
