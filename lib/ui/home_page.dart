@@ -5,7 +5,7 @@ import 'package:me_da_promo/repos/promotion_repository.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:me_da_promo/ui/promotion_card.dart';
 import '../auth.dart';
-import 'custom_card.dart';
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 
 class HomePage extends StatefulWidget {
   final FirebaseUser user;
@@ -59,8 +59,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+
+    FocusScope.of(context).unfocus();
 
     return Scaffold(
       drawer: Drawer(
@@ -71,10 +71,15 @@ class _HomePageState extends State<HomePage> {
             UserAccountsDrawerHeader(
               accountName: Text(user.displayName),
               accountEmail: Text(user.email),
-              currentAccountPicture: CircleAvatar(
-                radius: 30.0,
-                backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl) : NetworkImage("https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"),
-                backgroundColor: Colors.transparent,
+              currentAccountPicture: CircularProfileAvatar(user.photoUrl != null ? user.photoUrl : "",
+                radius: 100, 
+                backgroundColor: Colors.indigoAccent,
+                initialsText: Text(
+                  user.displayName.substring(0, 2),
+                  style: TextStyle(fontSize: 40, color: Colors.white),
+                ),
+                elevation: 5.0,
+                cacheImage: true,
               ),
               decoration: BoxDecoration(
                 color: Colors.grey,

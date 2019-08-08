@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/style/theme.dart' as Theme;
 import 'package:me_da_promo/ui/home_page.dart';
 import 'package:me_da_promo/utils/bubble_indication_painter.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import '../auth.dart';
 
@@ -37,23 +39,14 @@ class _LoginPageState extends State<LoginPage>
   bool _obscureTextSignup = true;
   bool _obscureTextSignupConfirm = true;
 
-  TextEditingController signupEmailController = new TextEditingController();
   TextEditingController signupNameController = new TextEditingController();
+  TextEditingController signupEmailController = new TextEditingController();
   TextEditingController signupPasswordController = new TextEditingController();
-  TextEditingController signupConfirmPasswordController = new TextEditingController();
 
   PageController _pageController;
 
   Color left = Colors.black;
   Color right = Colors.white;
-
-  Future<FirebaseUser> _user;
-
-  String _email;
-  String _password;
-  String _emailSignUp;
-  String _passwordSignUp;
-  String _nameSignUp;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +54,10 @@ class _LoginPageState extends State<LoginPage>
       onTap: () {
         FocusScope.of(context).unfocus();
       },
+      onDoubleTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      onHorizontalDragStart: null,
       child: new Scaffold(
         key: _scaffoldKey,
         resizeToAvoidBottomPadding: false,
@@ -129,24 +126,12 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  void _login(String email, String password) {
-
-    print(email);
-    print(password);
-
-  }
-
-  bool _validateEmail(String email) {
-  
+  bool _validateEmail(String email) {  
     if(RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email) && email != null) {
       return true;
     }
-
     return false;
-
   }
-
-
 
   @override
   void dispose() {
@@ -191,35 +176,53 @@ class _LoginPageState extends State<LoginPage>
     return false;
   }
 
-  void _validateAndSubmitLogin() async {
+  void _validateAndSubmitLogin(TextEditingController emailLogin, TextEditingController passwordLogin) async {
 
     if (_validateAndSaveSignIn()) {
       String userId = "";
       try {        
-          print(_email);
-          print(_password);
-          FirebaseUser user = await authService.signInWithCredentials(_email, _password);
+          print(emailLogin.text);
+          print(passwordLogin.text);
+          FirebaseUser user = await authService.signInWithCredentials(emailLogin.text, passwordLogin.text);
           // authService.sendEmailVerification();
           // _showVerifyEmailSentDialog();
-
+          passwordLogin.clear();
           print('Signed in user: $userId');    
           Navigator.push(context, MaterialPageRoute(
             builder: (context) => HomePage(user: user,)
               ));
 
-      } catch (e) {
-        print('Error: $e');
+      } catch (ERROR_WRONG_PASSWORD) {
+        print("Error: wrong pass");
+        Alert(
+          context: context, 
+          title: "Senha incorreta",
+          style: AlertStyle(
+            isCloseButton: false
+          ), 
+          buttons: [
+            DialogButton(
+              child: Text("Ok"),
+              onPressed: () => Navigator.pop(context),
+              color: Colors.grey,
+            )
+          ]
+          ).show();
+      } catch(e) {
+        print("Error: ${e}");
       }
     }
   }
 
-    void _validateAndSubmitSignUp() async {
+    void _validateAndSubmitSignUp(TextEditingController emailSignUp, TextEditingController passwordSignUp, TextEditingController nameSignUp) async {
 
     if (_validateAndSaveSignUp()) {
       try {        
-          print(_emailSignUp);
-          print(_passwordSignUp);
-          FirebaseUser user = await authService.signUp(_emailSignUp, _passwordSignUp, _nameSignUp);
+          print(emailSignUp.text);
+          print(passwordSignUp.text);
+          FirebaseUser user = await authService.signUp(emailSignUp.text, passwordSignUp.text, nameSignUp.text);
+
+          passwordSignUp.clear();
 
           user.reload().then((val) {
           Navigator.push(context, MaterialPageRoute(
@@ -312,20 +315,21 @@ class _LoginPageState extends State<LoginPage>
             overflow: Overflow.visible,
             children: <Widget>[
               Card(
-                elevation: 2.0,
+                elevation: 4.0,
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Container(
                   width: 300.0,
-                  height: 190.0,
+                  height: 220.0,
                   child: Column(
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.only(
                             top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
                         child: TextFormField(
+                          controller: loginEmailController,
                           keyboardType: TextInputType.emailAddress,
                           style: TextStyle(
                               fontFamily: "WorkSansSemiBold",
@@ -343,7 +347,7 @@ class _LoginPageState extends State<LoginPage>
                                 fontFamily: "WorkSansSemiBold", fontSize: 17.0),
                           ),
                           validator: (value) => _validateEmail(value) == true ? null : "You must enter a valid email.",
-                          onSaved: (value) => _email = value.trim(),
+                          onSaved: (value) => loginEmailController.text = value,
                         ),
 
                       ),
@@ -385,15 +389,20 @@ class _LoginPageState extends State<LoginPage>
                             ),
                           ),
                           validator: (value) => value.isEmpty ? "You must enter a valid password." : null,
-                          onSaved: (value) => _password = value.trim(),
+                          onSaved: (value) => loginPasswordController.text = value,
                         ),
+                      ),
+                      Container(
+                        width: 250.0,
+                        height: 1.0,
+                        color: Colors.grey[400],
                       ),
                     ],
                   ),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 170.0),
+                margin: EdgeInsets.only(top: 200.0),
                 decoration: new BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                   boxShadow: <BoxShadow>[
@@ -428,7 +437,7 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: () => _validateAndSubmitLogin()
+                    onPressed: () => _validateAndSubmitLogin(loginEmailController, loginPasswordController)
                     ),
               ),
             ],
@@ -554,6 +563,7 @@ class _LoginPageState extends State<LoginPage>
                           padding: EdgeInsets.only(
                               top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
                           child: TextFormField(
+                            controller: signupNameController,
                             keyboardType: TextInputType.emailAddress,
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
@@ -571,7 +581,7 @@ class _LoginPageState extends State<LoginPage>
                                   fontFamily: "WorkSansSemiBold", fontSize: 17.0),
                             ),
                             validator: (value) => value.isEmpty ? "Insira um nome." : null,
-                            onSaved: (value) => _nameSignUp = value.trim(),
+                            onSaved: (value) => signupNameController.text = value,
                           ),
                         ),
                         Container(
@@ -583,6 +593,7 @@ class _LoginPageState extends State<LoginPage>
                           padding: EdgeInsets.only(
                               top: 20.0, bottom: 20.0, left: 25.0, right: 25.0),
                           child: TextFormField(
+                            controller: signupEmailController,
                             keyboardType: TextInputType.emailAddress,
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
@@ -600,7 +611,7 @@ class _LoginPageState extends State<LoginPage>
                                   fontFamily: "WorkSansSemiBold", fontSize: 17.0),
                             ),
                             validator: (value) => _validateEmail(value) == true ? null : "Email inválido.",
-                            onSaved: (value) => _emailSignUp = value.trim(),
+                            onSaved: (value) => signupEmailController.text = value,
                           ),
                         ),
                         Container(
@@ -612,6 +623,7 @@ class _LoginPageState extends State<LoginPage>
                           padding: EdgeInsets.only(
                               top: 20.0, bottom: 15.0, left: 25.0, right: 25.0),
                           child: TextFormField(
+                            controller: signupPasswordController,
                             focusNode: myFocusNodePasswordLogin,
                             obscureText: _obscureTextSignup,
                             style: TextStyle(
@@ -639,7 +651,7 @@ class _LoginPageState extends State<LoginPage>
                               ),
                             ),
                             validator: (value) => value.isEmpty || value.length < 8 ? "Insira pelo menos 8 caracteres." : null,
-                            onSaved: (value) => _passwordSignUp = value.trim(),
+                            onSaved: (value) => signupPasswordController.text = value,
                           ),
                         ),
                       ],
@@ -682,7 +694,7 @@ class _LoginPageState extends State<LoginPage>
                               fontFamily: "WorkSansBold"),
                         ),
                       ),
-                      onPressed: () => _validateAndSubmitSignUp(),
+                      onPressed: () => _validateAndSubmitSignUp(signupEmailController, signupPasswordController, signupNameController),
                 ),
                 ),
               ],
