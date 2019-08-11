@@ -4,6 +4,7 @@ import 'package:me_da_promo/models/promotion.dart';
 import 'package:me_da_promo/repos/promotion_repository.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:me_da_promo/ui/promotion_card.dart';
+import 'package:me_da_promo/ui/promotion_page.dart';
 import '../auth.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 
@@ -33,7 +34,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void listenForPromotions() async {
-    final Stream<Promotion> stream = await getPromotions(user);
+    Stream<Promotion> stream = await getPromotions(user);
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
         isLoading = false;
@@ -75,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                 radius: 100, 
                 backgroundColor: Colors.indigoAccent,
                 initialsText: Text(
-                  user.displayName.substring(0, 2),
+                  user.displayName.substring(0, 1),
                   style: TextStyle(fontSize: 40, color: Colors.white),
                 ),
                 elevation: 5.0,
@@ -105,14 +106,21 @@ class _HomePageState extends State<HomePage> {
         : 
         Container(
         child: RefreshIndicator(
-    key: _refreshIndicatorKey,
-    onRefresh: _refresh,
-    child: ListView.builder(
+          key: _refreshIndicatorKey,
+          onRefresh: _refresh,
+          child: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           itemCount: _promotions.length,
           itemBuilder: (BuildContext context, int index) {
-            return PromotionCard.fromPromotion(_promotions[index]);
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => PromotionPage(user: user, promotion: _promotions[index])
+                ));
+              },
+              child: PromotionCard.fromPromotion(_promotions[index])
+            ); 
           },
         ),)          
       ),

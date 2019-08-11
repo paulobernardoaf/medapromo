@@ -33,6 +33,7 @@ dependencies:
   material_design_icons_flutter:
   circular_profile_avatar:
   rflutter_alert:
+  flutter_screenutil:
 
 dev_dependencies:
   flutter_test:

@@ -510,10 +510,12 @@ class _LoginPageState extends State<LoginPage>
                 padding: EdgeInsets.only(top: 10.0),
                 child: GestureDetector(
                   onTap: () => {
-                    authService.signInWithGoogle().then((user) => {
+                    authService.signInWithGoogle().then((user) {
+                      loginPasswordController.clear();
+                      signupPasswordController.clear();
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) => HomePage(user: user,))
-                      )
+                      );
                     })
                   },
                   child: Container(
