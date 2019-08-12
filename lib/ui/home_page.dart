@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/models/promotion.dart';
 import 'package:me_da_promo/repos/promotion_repository.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:me_da_promo/ui/promotion_card.dart';
+import 'package:me_da_promo/ui/promotion_create.dart';
 import 'package:me_da_promo/ui/promotion_page.dart';
 import '../auth.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
@@ -49,21 +51,13 @@ class _HomePageState extends State<HomePage> {
     return null;
   }
 
-  Choice _selectedChoice = choices[0];
-  
-    void _select(Choice choice) {
-    // Causes the app to rebuild with the new _selectedChoice.
-    setState(() {
-      _selectedChoice = choice;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
 
     FocusScope.of(context).unfocus();
 
     return Scaffold(
+      backgroundColor: Color.fromRGBO(240, 240, 240, 1),
       drawer: Drawer(
         child: 
         ListView(
@@ -83,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                 cacheImage: true,
               ),
               decoration: BoxDecoration(
-                color: Colors.grey,
+                color: Colors.redAccent,
               ),
             ),
             ListTile(
@@ -98,8 +92,8 @@ class _HomePageState extends State<HomePage> {
         ), // Populate the Drawer in the next step.
       ),
       appBar: new AppBar(
-        title: Text("HomePage"),
-        backgroundColor: Colors.grey,
+        title: Text("Promoções"),
+        backgroundColor: Colors.redAccent,
       ),
       body: isLoading ? 
         Center(child: CircularProgressIndicator(),) 
@@ -123,6 +117,15 @@ class _HomePageState extends State<HomePage> {
             ); 
           },
         ),)          
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.redAccent,
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => PromotionCreate(user: user)
+          ));
+        }
       ),
     );
   }

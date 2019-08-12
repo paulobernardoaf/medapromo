@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/models/promotion.dart';
 
 class PromotionPage extends StatefulWidget {
@@ -24,6 +23,7 @@ class _PromotionPageState extends State<PromotionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
+        backgroundColor: Colors.redAccent,
         centerTitle: true,
         title: Text("Promoção"),
       ),
@@ -66,7 +66,16 @@ class _PromotionPageState extends State<PromotionPage> {
                       fontWeight: FontWeight.bold,
                       color: Colors.amber
                     ),
-                  )
+                  ),
+                  Divider(),
+                  Text(
+                    "R\$ ${promotion.discountCode}",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber
+                    ),
+                  ),
                 ]
               )
             ),

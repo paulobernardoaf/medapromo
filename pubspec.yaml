@@ -34,6 +34,8 @@ dependencies:
   circular_profile_avatar:
   rflutter_alert:
   flutter_screenutil:
+  dio:
+  validators:
 
 dev_dependencies:
   flutter_test:

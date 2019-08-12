@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/style/theme.dart' as Theme;
@@ -50,6 +51,13 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+
+    ScreenUtil.instance = ScreenUtil(
+    width: MediaQuery.of(context).size.width,
+    height: MediaQuery.of(context).size.height,
+    allowFontScaling: true,
+    )..init(context);
+
      return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
