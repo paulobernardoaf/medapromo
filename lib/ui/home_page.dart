@@ -25,8 +25,8 @@ class _HomePageState extends State<HomePage> {
   _HomePageState({Key key, @required this.user});
   bool isLoading = true;
   ScrollController scrollController;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-    new GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
+  int bottomBarIndex = 0;
 
   @override
   void initState() {
@@ -36,18 +36,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   void listenForPromotions() async {
-    Stream<Promotion> stream = await getPromotions(user);
+    Stream<Promotion> stream = await getPromotions(user, "");
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
         isLoading = false;
   }
 
-  Future<Null> _refresh() async {
-    _promotions = <Promotion>[];
-    final Stream<Promotion> stream = await getPromotions(user);
-    stream.listen(
-        (Promotion promotion) => setState(() => _promotions.add(promotion)));
-        isLoading = false;
+  Future<Null> _refresh(int index) async {
+    String param = "";
+
+    if(index == 1) {
+      param = "?param=data_cadastro&order=desc";
+    }
+
+    setState(() {
+     isLoading = true; 
+    });
+    _promotions = <Promotion>[];    
+    final Stream<Promotion> stream = await getPromotions(user, param);
+    stream.listen((Promotion promotion) => setState(() => _promotions.add(promotion)));
+    isLoading = false;
     return null;
   }
 
@@ -101,7 +109,7 @@ class _HomePageState extends State<HomePage> {
         Container(
         child: RefreshIndicator(
           key: _refreshIndicatorKey,
-          onRefresh: _refresh,
+          onRefresh: () => _refresh(bottomBarIndex),
           child: ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
@@ -124,8 +132,30 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(
                   builder: (context) => PromotionCreate(user: user)
-          ));
+          )).then((value) => _refresh(bottomBarIndex));
         }
+      ),
+      bottomNavigationBar: new BottomNavigationBar(
+        currentIndex: bottomBarIndex,        
+        selectedItemColor: Colors.white,
+        backgroundColor: Colors.redAccent,
+        items: [
+          BottomNavigationBarItem(
+            title: Text("Home",),
+            icon: Icon(FontAwesomeIcons.home)
+          ),
+          BottomNavigationBarItem(
+            title: Text("Novos"), 
+            icon: Icon(Icons.new_releases),
+          ),
+        ],
+        onTap: (index) {
+          print(index);
+          setState(() {
+           bottomBarIndex = index;
+           _refresh(index);
+          });
+        },
       ),
     );
   }

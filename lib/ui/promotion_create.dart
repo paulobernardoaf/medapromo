@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:me_da_promo/repos/promotion_repository.dart';
+import 'package:me_da_promo/utils/categories_utils.dart';
 import 'package:validators/validators.dart';
 import 'package:validators/sanitizers.dart';
 
@@ -25,6 +26,8 @@ class _PromotionCreateState extends State<PromotionCreate> {
   Text calendarText = Text("Termina em");
   bool validTime = true;
 
+  Categories categories = new Categories();
+
   _PromotionCreateState({Key key, @required this.user});
 
   TextEditingController titleController = new TextEditingController();
@@ -40,6 +43,7 @@ class _PromotionCreateState extends State<PromotionCreate> {
   String _promotionLink = "";
   String _description = "";
   String _discountCode = "";
+  double _priceAsDouble;
 
   void changeVariable(String variable, String newValue) {
 
@@ -64,7 +68,79 @@ class _PromotionCreateState extends State<PromotionCreate> {
           break;
       }
 
-    }
+  }
+
+  String _validateField(value, variable) {
+
+    int result = 0;
+
+    switch (variable) {
+        case "promotionLink":
+          value.isEmpty ? result = 1 : result = 0;
+          if(result == 0) { //caso o value nao seja vazio, fazer a validacao do campo
+            isURL(value, allowUnderscore: true) ? result = 0 : result = 2;
+          }
+          if(result == 1) {
+            return "Link não pode ser vazio";
+          } else if(result == 2) {
+            return "Insira um link válido";
+          } else {
+            return null;
+          }
+          break;
+        case "title":
+          value.isEmpty ? result = 1 : result = 0;
+          if(result == 1) {
+            return "Título não pode ser vazio";
+          } else {
+            return null;
+          }
+          break;
+        case "price":
+          value.isEmpty ? result = 1 : result = 0;
+          if(result == 0) { //caso o value nao seja vazio, fazer a validacao do campo
+            _priceAsDouble = double.tryParse(value);
+            if(_priceAsDouble == null) { // não conseguiu fazer o parse
+              result = 2;
+            }
+          }
+          if(result == 1) {
+            return "Preço não pode ser vazio";
+          } else if(result == 2) {
+            return "Insira um valor válido";
+          } else {
+            return null;
+          }
+          break;
+        case "description":
+            value.isEmpty ? result = 1 : result = 0;
+            if(result == 1) {
+            return "Descrição não pode ser vazia";
+          } else {
+            return null;
+          }
+          break;
+        case "imageLink":
+          value.isEmpty ? result = 1 : result = 0;
+          if(result == 0) {
+            isURL(value, allowUnderscore: true) ? result = 0 : result = 2;
+          }
+          if(result == 1) {
+            return "Link não pode ser vazio";
+          } else if(result == 2) {
+            return "Insira um link válido";
+          } else {
+            return null;
+          }
+          break;
+        case "discountCode":
+          value.isEmpty ? _discountCode = null : _discountCode = value;
+          return null;
+          break;
+      }
+
+      return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +153,7 @@ class _PromotionCreateState extends State<PromotionCreate> {
       final DateTime picked = await showDatePicker(
           context: context,
           initialDate: selectedDate,
-          firstDate: DateTime(2015, 8),
+          firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day-1),
           lastDate: DateTime(2101));
       if (picked != null && picked != selectedDate)
         setState(() {
@@ -98,9 +174,7 @@ class _PromotionCreateState extends State<PromotionCreate> {
         form.save();
         print("form válido");
         await postPromotion(user, _promotionLink, _title, _price, _description, _imageLink, _discountCode);
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) => HomePage(user: user,)
-        ));        
+        Navigator.pop(context);       
       } else {
         print("form inválido");
       }
@@ -128,17 +202,17 @@ class _PromotionCreateState extends State<PromotionCreate> {
         child: new Form(
           key: _formKey,
           child: ListView(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),                        
             children: <Widget>[
-              _formField(promotionLinkController, "Link da Promoção", FontAwesomeIcons.link, true, "Link", _promotionLink),
+              _formField(promotionLinkController, "Link da Promoção", FontAwesomeIcons.link, "Link", "promotionLink"),
               SizedBox(height: 40,),
-              _formField(titleController, "Título da Promoção", FontAwesomeIcons.font, true, "Título", "title"),
+              _formField(titleController, "Título da Promoção", FontAwesomeIcons.font, "Título", "title"),
               SizedBox(height: 40,),
-              _formField(priceController, "Valor do produto", FontAwesomeIcons.moneyBillAlt, true, "Valor", "price"),
+              _formField(priceController, "Valor do produto", FontAwesomeIcons.moneyBillAlt, "Valor", "price"),
               SizedBox(height: 40,),
-              _formField(descriptionController, "Descrição da promoção/produto", FontAwesomeIcons.stream, true, "Descrição", "description"),
+              _formField(descriptionController, "Descrição da promoção/produto", FontAwesomeIcons.stream, "Descrição", "description"),
               SizedBox(height: 40,),
-              _formField(imageLinkController, "Link para imagem", FontAwesomeIcons.solidImage, true, "Link da Imagem", "imageLink"),
+              _formField(imageLinkController, "Link para imagem", FontAwesomeIcons.solidImage, "Link da Imagem", "imageLink"),
               SizedBox(height: 40,),
               TextField(
                 decoration: InputDecoration(
@@ -158,7 +232,15 @@ class _PromotionCreateState extends State<PromotionCreate> {
                 onTap: () => _selectDate(context),
               ),
               SizedBox(height: 40,),
-              _formField(discountCodeController, "Código de desconto(Opcional)", FontAwesomeIcons.tag, false, "Código de Desconto", "discountCode"),
+              _formField(discountCodeController, "Código de desconto(Opcional)", FontAwesomeIcons.tag, "Código de Desconto", "discountCode"),
+              SizedBox(height: 40,),
+              checkbox("Automotivos", categories.automotivos),
+              checkbox("Computadores e Informática", categories.compEInfor),
+              checkbox("Celulares e Smartphones", categories.celESmart),
+              checkbox("Livros", categories.livros),
+              checkbox("Eletrodomésticos", categories.eletrodom),
+              checkbox("Tv, Som e Vídeo", categories.tvsomvideo),
+              checkbox("Outros", categories.outros)
             ],
           ),
         ),
@@ -166,7 +248,46 @@ class _PromotionCreateState extends State<PromotionCreate> {
     );
   }
 
-  Widget _formField(TextEditingController controller, String hintText, IconData icon, bool mandatory, String field, String varName) {
+  Widget checkbox(String title, bool boolValue) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(title),
+        Checkbox(
+          value: boolValue,
+          onChanged: (bool value) {
+            setState(() {
+              switch (title) {
+              case "Automotivos":
+                  categories.automotivos = value;
+                  break;
+              case "Computadores e Informática":
+                  categories.compEInfor = value;
+                  break;
+              case "Celulares e Smartphones":
+                  categories.celESmart = value;
+                  break;
+              case "Livros":
+                  categories.livros = value;
+                  break;
+              case "Eletrodomésticos":
+                  categories.eletrodom = value;
+                  break;
+              case "Tv, Som e Vídeo":
+                  categories.tvsomvideo = value;
+                  break;
+              case "Outros":
+                  categories.outros = value;
+                  break;
+              }
+            });
+          },
+        )
+      ],
+    );
+  }
+
+  Widget _formField(TextEditingController controller, String hintText, IconData icon, String field, String varName) {
     return new TextFormField(
       controller: controller,
       style: TextStyle(
@@ -183,7 +304,7 @@ class _PromotionCreateState extends State<PromotionCreate> {
         hintStyle: TextStyle(
             fontFamily: "WorkSansSemiBold", fontSize: 17.0),
       ),
-      validator: (value) => value.isEmpty && mandatory ? "${field} não pode ser vazio" : null,
+      validator: (value) => _validateField(value, varName),
       onSaved: (value) => changeVariable(varName, value),
     );
   }

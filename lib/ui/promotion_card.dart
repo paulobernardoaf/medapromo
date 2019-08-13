@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/models/promotion.dart';
 
 class PromotionCard extends StatelessWidget {
@@ -8,9 +10,13 @@ class PromotionCard extends StatelessWidget {
 
   PromotionCard.fromPromotion(Promotion promotion) :
     _promotion = promotion;   
+    
 
   @override
   Widget build(BuildContext context) {
+
+    
+
     // TODO: implement build
     return new Card(
               elevation: 8.0,
@@ -31,7 +37,12 @@ class PromotionCard extends StatelessWidget {
                         child: SizedBox(
                           width: 70,
                           height: 70,
-                          child: imageLink != null ? Image.network(imageLink) : null,
+                          child: CachedNetworkImage(
+                            imageUrl: imageLink,
+                            placeholder: (context, url) => new CircularProgressIndicator(),
+                            errorWidget: (context, url, error) => new Icon(FontAwesomeIcons.image),
+                            fit: BoxFit.scaleDown,
+                          ),
                         )
                       ),
                       title: Text(title,
@@ -42,7 +53,10 @@ class PromotionCard extends StatelessWidget {
                       // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
                       subtitle: Row(
                         children: <Widget>[
-                          Icon(Icons.attach_money, color: Colors.black,),
+                          Divider(color: Colors.red, height: 16,),
+                          Text("R\$ ",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          ),
                           Text(price,
                               style: TextStyle(color: Colors.black))
                         ],

@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:me_da_promo/utils/categories_utils.dart';
 import 'dart:convert';
 import '../models/promotion.dart';
 import 'package:dio/dio.dart';
 
-Future<Stream<Promotion>> getPromotions(FirebaseUser user) async {
-  final String url = 'https://medapromo.herokuapp.com/promotion';
+Future<Stream<Promotion>> getPromotions(FirebaseUser user, String filtro) async {
+  print(filtro);
+  final String url = "https://medapromo.herokuapp.com/promotion" + filtro;
 
   final client = new http.Client();
   final streamedRest = await client.send(
@@ -21,21 +23,22 @@ Future<Stream<Promotion>> getPromotions(FirebaseUser user) async {
       .map((data) => Promotion.fromJSON(data, user));
 }
 
-Future<void> postPromotion(FirebaseUser user, String promotionLink, String title, String price, String description, String imageLink, String discountCode) async {
+Future<void> postPromotion(FirebaseUser user, String promotionLink, String title, String price, String description, String imageLink, String discountCode, Categories categories) async {
 
   final String url = 'https://medapromo.herokuapp.com/promotion';
 
   Map<String, String> body = {
     'titulo': title,
     'link' : promotionLink,
-    'usuario' : "1",
+    'usuario' : user.uid,
     'preco' : price,
     'imagem' : imageLink,
     'descricao' : description,
-    'codigo_desconto' : discountCode
+    'codigo_desconto' : discountCode,
   };
 
   await Dio().post(url,data:body, options: new Options(contentType:ContentType.parse("application/x-www-form-urlencoded"))); 
+  await categories.postForCategories();
 
   print("post feito");
 
