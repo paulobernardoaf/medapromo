@@ -14,7 +14,7 @@ class Promotion {
   final String _dateRemoved;
   final String _dateModified;
   final String _discountCode;
-  final double _rating;
+  final int _rating;
 
   Promotion.fromJSON(Map<String, dynamic> jsonMap, FirebaseUser user) :
 
@@ -29,12 +29,12 @@ class Promotion {
     _dateRemoved = jsonMap['data_remocao'] != null ? new DateFormat("dd-MM-yyyy H:mm:ss").format(DateTime.parse(jsonMap['data_remocao'])) : null,
     _dateModified = jsonMap['data_modificacao'] != null ? new DateFormat("dd-MM-yyyy H:mm:ss").format(DateTime.parse(jsonMap['data_modificacao'])) : null,
     _discountCode = jsonMap['codigo_desconto'],
-    _rating = jsonMap['avalicao'];
+    _rating = jsonMap['avaliacao'];
 
 
   String get description => _description;
 
-  double get rating => _rating;
+  int get rating => _rating;
 
   String get discountCode => _discountCode;
 

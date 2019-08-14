@@ -80,7 +80,7 @@ class _LoginPageState extends State<LoginPage>
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height >= 775.0
                     ? MediaQuery.of(context).size.height
-                    : 775.0,
+                    : 912.0,
                decoration: new BoxDecoration(
                   gradient: new LinearGradient(
                       colors: [

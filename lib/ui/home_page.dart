@@ -221,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                                     user: user,
                                     promotion: _promotions[index])));
                       },
-                      child: PromotionCard.fromPromotion(_promotions[index]));
+                      child: PromotionCard(promotion: _promotions[index]));
                 },
               ),
             )),

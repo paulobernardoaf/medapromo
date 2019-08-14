@@ -3,11 +3,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:me_da_promo/models/promotion.dart';
+import 'package:http/http.dart' as http;
 
-class PromotionCard extends StatelessWidget {
-  final Promotion _promotion;
+class PromotionCard extends StatefulWidget {
+  final Promotion promotion;
 
-  PromotionCard.fromPromotion(Promotion promotion) : _promotion = promotion;
+  PromotionCard({Key key, @required this.promotion}) : super(key:key);
+
+  @override
+  _PromotionCardState createState() => _PromotionCardState(promotion: promotion);
+}
+
+class _PromotionCardState extends State<PromotionCard> {
+
+  final Promotion promotion;
+
+  _PromotionCardState({Key key, @required this.promotion});
 
   @override
   Widget build(BuildContext context) {
@@ -41,53 +52,130 @@ class PromotionCard extends StatelessWidget {
                           new Icon(FontAwesomeIcons.image),
                       fit: BoxFit.scaleDown,
                     ),
-                  )),
+                  )
+              ),
               title: Text(
                 title,
+                maxLines: 2,
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-              subtitle: Row(
+              subtitle: Column(
                 children: <Widget>[
-                  Divider(
-                    color: Colors.red,
-                    height: 16,
+                  Divider(),
+                  Row(
+                    children: <Widget>[
+                      Row(
+                          //mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Text(
+                              "R\$ ",
+                              style: TextStyle(
+                                  color: Colors.black, fontWeight: FontWeight.bold),
+                            ),
+                            Text(price, style: TextStyle(color: Colors.black)),
+                          ],
+                      ),
+                      SizedBox(width: 10.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () => ratingMinus("asjdgfasjgdashdasd"),
+                            child: Icon(
+                              FontAwesomeIcons.minus,
+                              size: 17.0,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          getEmojis(),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          GestureDetector(
+                            onTap: () => ratingPlus("asjdgfasjgdashdasd"),
+                            child: Icon(
+                              FontAwesomeIcons.plus,
+                              size: 17.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    
                   ),
-                  Text(
-                    "R\$ ",
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                  Text(price, style: TextStyle(color: Colors.black))
                 ],
+              ), 
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Colors.black, size: 30.0
+                  )
+                ]
               ),
-              trailing: Icon(Icons.keyboard_arrow_right,
-                  color: Colors.black, size: 30.0))),
+            )
+          ),
     );
   }
 
-  String get description => _promotion.description;
+  Widget getEmojis(){
+    if(promotion.rating < -5) {
+      return Icon(FontAwesomeIcons.angry, size: 17.0);
+    }
+    else if(promotion.rating < 0) {
+      return Icon(FontAwesomeIcons.frown, size: 17.0);
+    }
+    else if(promotion.rating == 0) {
+      return Icon(FontAwesomeIcons.meh, size: 17.0);
+    }
+    else if(promotion.rating < 5) {
+      return Icon(FontAwesomeIcons.smileBeam, size: 17.0);
+    }
+    else {
+      return Icon(FontAwesomeIcons.laughBeam, size: 17.0);
+    }
+  }
 
-  double get rating => _promotion.rating;
+  Future<void> ratingMinus(String user) async {
+    final String url = "https://medapromo.herokuapp.com/promotion/vote/" + promotion.id.toString() + "/" + user + "?menos";
 
-  String get discountCode => _promotion.discountCode;
+    final client = new http.Client();
+    final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
+  }
 
-  String get dateModified => _promotion.dateModified;
+  Future<void> ratingPlus(String user) async {
+    final String url = "https://medapromo.herokuapp.com/promotion/vote/" + promotion.id.toString() + "/" + user + "?mais";
 
-  String get dateRemoved => _promotion.dateRemoved;
+    final client = new http.Client();
+    final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
+  }
 
-  String get dateCreated => _promotion.dateCreated;
+  String get description => promotion.description;
 
-  String get imageLink => _promotion.imageLink;
+  int get rating => promotion.rating;
 
-  String get link => _promotion.link;
+  String get discountCode => promotion.discountCode;
 
-  String get price => _promotion.price;
+  String get dateModified => promotion.dateModified;
 
-  FirebaseUser get user => _promotion.user;
+  String get dateRemoved => promotion.dateRemoved;
 
-  String get title => _promotion.title;
+  String get dateCreated => promotion.dateCreated;
 
-  int get id => _promotion.id;
+  String get imageLink => promotion.imageLink;
+
+  String get link => promotion.link;
+
+  String get price => promotion.price;
+
+  FirebaseUser get user => promotion.user;
+
+  String get title => promotion.title;
+
+  int get id => promotion.id;
 }
