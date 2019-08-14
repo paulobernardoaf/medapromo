@@ -61,14 +61,13 @@ class _PromotionCardState extends State<PromotionCard> {
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
-              // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
               subtitle: Column(
                 children: <Widget>[
                   Divider(),
                   Row(
                     children: <Widget>[
-                      Row(
-                          //mainAxisAlignment: MainAxisAlignment.end,
+                      Expanded(
+                        child: Row(
                           children: <Widget>[
                             Text(
                               "R\$ ",
@@ -78,7 +77,7 @@ class _PromotionCardState extends State<PromotionCard> {
                             Text(price, style: TextStyle(color: Colors.black)),
                           ],
                       ),
-                      SizedBox(width: 10.0),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
@@ -143,14 +142,17 @@ class _PromotionCardState extends State<PromotionCard> {
   }
 
   Future<void> ratingMinus(String user) async {
-    final String url = "https://medapromo.herokuapp.com/promotion/vote/" + promotion.id.toString() + "/" + user + "?menos";
+    print("minus");
+    final String url = "https://medapromo.herokuapp.com/promotion/vote/" + promotion.id.toString() + "/" + user + "?menos=a";
 
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
+
   }
 
   Future<void> ratingPlus(String user) async {
-    final String url = "https://medapromo.herokuapp.com/promotion/vote/" + promotion.id.toString() + "/" + user + "?mais";
+    print("plus");
+    final String url = "https://medapromo.herokuapp.com/promotion/vote/" + promotion.id.toString() + "/" + user + "?mais=a";
 
     final client = new http.Client();
     final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
