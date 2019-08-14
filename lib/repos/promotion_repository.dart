@@ -31,7 +31,7 @@ Future<void> postPromotion(
     String imageLink,
     String discountCode,
     Categories categories,
-    DateTime date_end) async {
+    DateTime dateEnd) async {
   final String url = 'https://medapromo.herokuapp.com/promotion';
 
   Map<String, dynamic> body = {
@@ -42,7 +42,7 @@ Future<void> postPromotion(
     'imagem': imageLink,
     'descricao': description,
     'codigo_desconto': discountCode,
-    'data_termino': date_end
+    'data_termino': dateEnd
   };
 
   dynamic response = await Dio().post(url,

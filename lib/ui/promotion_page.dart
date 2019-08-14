@@ -79,7 +79,9 @@ class _PromotionPageState extends State<PromotionPage> {
                               fontWeight: FontWeight.bold,
                               color: Colors.amber),
                         ),
-                      ])),
+                      ]
+                  )
+              ),
             ),
           ],
         ));
