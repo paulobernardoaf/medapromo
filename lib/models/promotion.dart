@@ -5,7 +5,7 @@ class Promotion {
 
   final int _id;
   final String _title;
-  final FirebaseUser _user;
+  final String _user;
   final String _price;
   final String _link;
   final String _imageLink;
@@ -14,13 +14,13 @@ class Promotion {
   final String _dateRemoved;
   final String _dateModified;
   final String _discountCode;
-  final double _rating;
+  final int _rating;
 
-  Promotion.fromJSON(Map<String, dynamic> jsonMap, FirebaseUser user) :
+  Promotion.fromJSON(Map<String, dynamic> jsonMap) :
 
     _id = jsonMap['id'],
     _title = jsonMap['titulo'],
-    _user = user,
+    _user = jsonMap['usuario'],
     _price = jsonMap['preco'].toString(), 
     _link = jsonMap['link'],
     _imageLink = jsonMap['imagem'],
@@ -29,12 +29,12 @@ class Promotion {
     _dateRemoved = jsonMap['data_remocao'] != null ? new DateFormat("dd-MM-yyyy H:mm:ss").format(DateTime.parse(jsonMap['data_remocao'])) : null,
     _dateModified = jsonMap['data_modificacao'] != null ? new DateFormat("dd-MM-yyyy H:mm:ss").format(DateTime.parse(jsonMap['data_modificacao'])) : null,
     _discountCode = jsonMap['codigo_desconto'],
-    _rating = jsonMap['avalicao'];
+    _rating = jsonMap['avaliacao'];
 
 
   String get description => _description;
 
-  double get rating => _rating;
+  int get rating => _rating;
 
   String get discountCode => _discountCode;
 
@@ -50,7 +50,7 @@ class Promotion {
 
   String get price => _price;
 
-  FirebaseUser get user => _user;
+  String get user => _user;
 
   String get title => _title;
 

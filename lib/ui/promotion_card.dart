@@ -69,7 +69,7 @@ class PromotionCard extends StatelessWidget {
 
   String get description => _promotion.description;
 
-  double get rating => _promotion.rating;
+  int get rating => _promotion.rating;
 
   String get discountCode => _promotion.discountCode;
 
@@ -85,7 +85,7 @@ class PromotionCard extends StatelessWidget {
 
   String get price => _promotion.price;
 
-  FirebaseUser get user => _promotion.user;
+  String get user => _promotion.user;
 
   String get title => _promotion.title;
 

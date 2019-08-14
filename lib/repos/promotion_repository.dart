@@ -7,8 +7,7 @@ import 'dart:convert';
 import '../models/promotion.dart';
 import 'package:dio/dio.dart';
 
-Future<Stream<Promotion>> getPromotions(
-    FirebaseUser user, String filtro) async {
+Future<Stream<Promotion>> getPromotions(String filtro) async {
   print(filtro);
   final String url = "https://medapromo.herokuapp.com/promotion" + filtro;
 
@@ -19,7 +18,7 @@ Future<Stream<Promotion>> getPromotions(
       .transform(utf8.decoder)
       .transform(json.decoder)
       .expand((data) => (data as List))
-      .map((data) => Promotion.fromJSON(data, user));
+      .map((data) => Promotion.fromJSON(data));
 }
 
 Future<void> postPromotion(

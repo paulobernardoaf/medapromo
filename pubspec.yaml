@@ -37,6 +37,8 @@ dependencies:
   dio:
   validators:
   cached_network_image:
+  dotted_border:
+  url_launcher: ^5.0.1
 
 dev_dependencies:
   flutter_test:

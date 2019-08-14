@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void listenForPromotions() async {
-    Stream<Promotion> stream = await getPromotions(user, "");
+    Stream<Promotion> stream = await getPromotions("");
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
     isLoading = false;
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     _promotions = <Promotion>[];
-    final Stream<Promotion> stream = await getPromotions(user, param);
+    final Stream<Promotion> stream = await getPromotions(param);
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
     isLoading = false;
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
       isLoading = true;
     });
     _promotions = <Promotion>[];
-    final Stream<Promotion> stream = await getPromotions(user, param);
+    final Stream<Promotion> stream = await getPromotions(param);
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
     isLoading = false;
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
       isLoading = true;
     });
     _promotions = <Promotion>[];
-    final Stream<Promotion> stream = await getPromotions(user, param);
+    final Stream<Promotion> stream = await getPromotions(param);
     stream.listen(
         (Promotion promotion) => setState(() => _promotions.add(promotion)));
     isLoading = false;
