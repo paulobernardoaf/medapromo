@@ -7,18 +7,19 @@ import 'package:http/http.dart' as http;
 
 class PromotionCard extends StatefulWidget {
   final Promotion promotion;
+  final FirebaseUser actualUser;
 
-  PromotionCard({Key key, @required this.promotion}) : super(key:key);
+  PromotionCard({Key key, @required this.promotion, this.actualUser}) : super(key:key);
 
   @override
-  _PromotionCardState createState() => _PromotionCardState(promotion: promotion);
+  _PromotionCardState createState() => _PromotionCardState(promotion: promotion, actualUser: actualUser);
 }
 
 class _PromotionCardState extends State<PromotionCard> {
-
+  final FirebaseUser actualUser;
   final Promotion promotion;
 
-  _PromotionCardState({Key key, @required this.promotion});
+  _PromotionCardState({Key key, @required this.promotion, this.actualUser});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +83,7 @@ class _PromotionCardState extends State<PromotionCard> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           GestureDetector(
-                            onTap: () => ratingMinus("asjdgfasjgdashdasd"),
+                            onTap: () => ratingMinus(actualUser.uid),
                             child: Icon(
                               FontAwesomeIcons.minus,
                               size: 17.0,
@@ -96,7 +97,7 @@ class _PromotionCardState extends State<PromotionCard> {
                             width: 10.0,
                           ),
                           GestureDetector(
-                            onTap: () => ratingPlus("asjdgfasjgdashdasd"),
+                            onTap: () => ratingPlus(actualUser.uid),
                             child: Icon(
                               FontAwesomeIcons.plus,
                               size: 17.0,
@@ -165,6 +166,8 @@ class _PromotionCardState extends State<PromotionCard> {
 
   String get dateRemoved => promotion.dateRemoved;
 
+  String get user => promotion.user;
+
   String get dateCreated => promotion.dateCreated;
 
   String get imageLink => promotion.imageLink;
@@ -172,8 +175,6 @@ class _PromotionCardState extends State<PromotionCard> {
   String get link => promotion.link;
 
   String get price => promotion.price;
-
-  FirebaseUser get user => promotion.user;
 
   String get title => promotion.title;
 
