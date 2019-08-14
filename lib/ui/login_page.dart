@@ -222,7 +222,7 @@ class _LoginPageState extends State<LoginPage>
               DialogButton(
                 child: Text("Ok"),
                 onPressed: () => Navigator.pop(context),
-                color: Colors.grey,
+                color: Colors.redAccent,
               )
             ]).show();
       } catch (e) {
